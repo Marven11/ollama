@@ -330,7 +330,7 @@ func (s *Server) GenerateHandler(c *gin.Context) {
 	if req.Suffix != "" {
 		caps = append(caps, model.CapabilityInsert)
 	}
-	if req.Think != nil && req.Think.Bool() {
+	if (req.Think != nil && req.Think.Bool()) || (req.EnableThinking != nil && *req.EnableThinking) {
 		caps = append(caps, model.CapabilityThinking)
 		// TODO(drifkin): consider adding a warning if it's false and the model
 		// doesn't support thinking. It's not strictly required, but it can be a
@@ -1871,7 +1871,14 @@ func (s *Server) ChatHandler(c *gin.Context) {
 	if len(req.Tools) > 0 {
 		caps = append(caps, model.CapabilityTools)
 	}
-	if req.Think != nil && req.Think.Bool() {
+
+	think := req.Think
+
+	if think == nil && req.EnableThinking != nil {
+		think = &api.ThinkValue{Value: *req.EnableThinking}
+	}
+
+	if think != nil && think.Bool() {
 		caps = append(caps, model.CapabilityThinking)
 	}
 
@@ -1923,7 +1930,7 @@ func (s *Server) ChatHandler(c *gin.Context) {
 		}
 	}
 
-	prompt, images, err := chatPrompt(c.Request.Context(), m, r.Tokenize, opts, msgs, processedTools, req.Think)
+	prompt, images, err := chatPrompt(c.Request.Context(), m, r.Tokenize, opts, msgs, processedTools, think)
 	if err != nil {
 		slog.Error("chat prompt error", "error", err)
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
@@ -1944,14 +1951,14 @@ func (s *Server) ChatHandler(c *gin.Context) {
 	}
 
 	// Validate Think value: string values currently only allowed for harmony/gptoss models
-	if req.Think != nil && req.Think.IsString() && m.Config.Parser != "harmony" {
-		c.JSON(http.StatusBadRequest, gin.H{"error": fmt.Sprintf("think value %q is not supported for this model", req.Think.String())})
+	if think != nil && think.IsString() && m.Config.Parser != "harmony" {
+		c.JSON(http.StatusBadRequest, gin.H{"error": fmt.Sprintf("think value %q is not supported for this model", think.String())})
 		return
 	}
 
 	var thinkingState *thinking.Parser
 	openingTag, closingTag := thinking.InferTags(m.Template.Template)
-	if req.Think != nil && req.Think.Bool() && openingTag != "" && closingTag != "" {
+	if think != nil && think.Bool() && openingTag != "" && closingTag != "" {
 		thinkingState = &thinking.Parser{
 			OpeningTag: openingTag,
 			ClosingTag: closingTag,

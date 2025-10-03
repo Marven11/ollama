@@ -106,6 +106,10 @@ type GenerateRequest struct {
 	// before this option was introduced)
 	Think *ThinkValue `json:"think,omitempty"`
 
+	// EnableThinking controls whether thinking/reasoning models will think before
+	// responding. This is a simpler boolean alternative to the Think field.
+	EnableThinking *bool `json:"enable_think,omitempty"`
+
 	// DebugRenderOnly is a debug option that, when set to true, returns the rendered
 	// template instead of calling the model.
 	DebugRenderOnly bool `json:"_debug_render_only,omitempty"`
@@ -139,6 +143,10 @@ type ChatRequest struct {
 	// responding. Can be a boolean (true/false) or a string ("high", "medium", "low")
 	// for supported models.
 	Think *ThinkValue `json:"think,omitempty"`
+
+	// EnableThinking controls whether thinking/reasoning models will think before
+	// responding. This is a simpler boolean alternative to the Think field.
+	EnableThinking *bool `json:"enable_thinking,omitempty"`
 
 	// DebugRenderOnly is a debug option that, when set to true, returns the rendered
 	// template instead of calling the model.
