@@ -113,6 +113,7 @@ type ChatCompletionRequest struct {
 	ReasoningEffort  *string         `json:"reasoning_effort,omitempty"`
 	Logprobs         *bool           `json:"logprobs"`
 	TopLogprobs      int             `json:"top_logprobs"`
+	EnableThinking   *bool           `json:"enable_thinking,omitempty"`
 	DebugRenderOnly  bool            `json:"_debug_render_only"`
 }
 
@@ -597,6 +598,10 @@ func FromChatRequest(r ChatCompletionRequest) (*api.ChatRequest, error) {
 			think = &api.ThinkValue{Value: false}
 		} else {
 			think = &api.ThinkValue{Value: effort}
+		}
+	} else if r.EnableThinking != nil {
+		think = &api.ThinkValue{
+			Value: *r.EnableThinking,
 		}
 	}
 
