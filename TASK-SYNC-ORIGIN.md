@@ -6,15 +6,13 @@ main branch则基于enable_thinking添加了这个TASK文件
 
 你需要维护这个仓库，rebase到上游，让这个仓库和上游保持一致
 
-首先你需要在/tmp/TODO.md编写当前的进度
-
-检查上游是否设为github.com/ollama/ollama，然后将两个branch都rebase到上游的main branch
+首先检查上游是否设为github.com/ollama/ollama，然后将两个branch都rebase到上游的main branch
 
 如果上游和当前branch有分歧则手动修改代码文件并继续rebase
 
 然后git push两个branch
 
-最后切回main branch，防止之后检查不到TASK
+最后切回main branch，防止之后检查不到TASK，并杀死自己
 
 注意：
 
@@ -22,8 +20,9 @@ main branch则基于enable_thinking添加了这个TASK文件
 
 历史压缩时不要删除开头的TASK，防止遗忘任务内容
 
-不要使用-f或--force
+只有在使用git push时才能使用-f或--force
 
 commit时记得使用--no-edit（应该是这个）选项，因为你不支持使用编辑器
 
 你可能会在运行到一半时进行历史压缩，删除大部分消息，所以你需要额外注意历史压缩的总结，注意当前进度！
+
